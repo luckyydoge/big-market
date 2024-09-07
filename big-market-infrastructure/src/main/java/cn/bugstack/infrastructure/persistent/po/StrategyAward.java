@@ -2,6 +2,7 @@ package cn.bugstack.infrastructure.persistent.po;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -13,7 +14,7 @@ public class StrategyAward {
     private String awardSubtitle;
     private Integer awardCount;
     private Integer awardCountSurplus;
-    private Double awardRate;
+    private BigDecimal awardRate;
     private String ruleModels;
     private Integer sort;
     private Date createTime;
