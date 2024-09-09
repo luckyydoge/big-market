@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.*;
 
@@ -26,20 +25,23 @@ public class StrategyArmory implements IStrategyArmory {
         BigDecimal minimumRate = strategyAwardEntities.stream()
                 .map(StrategyAwardEntity::getAwardRate)
                 .min(BigDecimal::compareTo)
-                .orElse(BigDecimal.ZERO);
+                .orElse(BigDecimal.ZERO)
+                .stripTrailingZeros();
 
         // 3. get total award rate
         BigDecimal totalAwardRate = strategyAwardEntities.stream()
                 .map(StrategyAwardEntity::getAwardRate)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal rateRange = totalAwardRate.divide(minimumRate, 0, RoundingMode.CEILING);
+//        BigDecimal rateRange = totalAwardRate.divide(minimumRate, 0, RoundingMode.CEILING);
+        BigDecimal rateMultiple = BigDecimal.valueOf(Math.pow(10, minimumRate.scale()));
+        BigDecimal rateRange = totalAwardRate.multiply(rateMultiple);
 
         List<Integer> strategyAwardSearchTable = new ArrayList<>(rateRange.intValue());
         for (StrategyAwardEntity strategyAwardEntity : strategyAwardEntities) {
             Integer awardId = strategyAwardEntity.getAwardId();
             BigDecimal strategyAwardRate = strategyAwardEntity.getAwardRate();
-            for (int i = 0; i < strategyAwardRate.multiply(rateRange).setScale(0, RoundingMode.CEILING).intValue(); i++) {
+            for (int i = 0; i < strategyAwardRate.multiply(rateMultiple).intValue(); i++) {
                 strategyAwardSearchTable.add(awardId);
             }
         }
