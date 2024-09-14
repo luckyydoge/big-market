@@ -31,14 +31,24 @@ public class StrategyArmoryTest {
      */
     @Test
     public void test_getAssembleRandomVal() {
-        log.info("测试结果：{} - 奖品ID值", strategyArmory.getRandomAwardId(100002L));
-        log.info("测试结果：{} - 奖品ID值", strategyArmory.getRandomAwardId(100002L));
-        log.info("测试结果：{} - 奖品ID值", strategyArmory.getRandomAwardId(100002L));
-        log.info("测试结果：{} - 奖品ID值", strategyArmory.getRandomAwardId(100002L));
         IntStream.range(0, 1000).forEach(i -> {
             Integer id = strategyArmory.getRandomAwardId(100002L);
             Assert.assertNotNull(id);
-            log.info("i: 测试结果：{} - 奖品ID值", id);
+            log.info("装配100002L: 第i次测试结果：{} - 奖品ID值", id);
+        });
+    }
+
+    @Test
+    public void test_strategyAssemble100001L() {
+        strategyArmory.assmbleLotteryStrategy(100001L);
+    }
+
+    @Test
+    public void test_getAssembleRandomVal100001L() {
+        IntStream.range(0, 100000).forEach(i -> {
+            Integer id = strategyArmory.getRandomAwardId(100001L);
+            Assert.assertNotNull(id);
+            log.info("装配100001L: 第i次测试结果：{} - 奖品ID值", id);
         });
     }
 }

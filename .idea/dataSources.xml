@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="@localhost [2]" uuid="c02b4308-a787-44bb-a44d-21248ec41af6">
+    <data-source source="LOCAL" name="@localhost" uuid="61ea8a73-c8d8-4bfa-af52-451d555f5e0d">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
@@ -13,7 +13,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="big_market@127.0.0.1" uuid="f5c17b9b-26c0-4bbc-8683-9541463cd45a">
+    <data-source source="LOCAL" name="big_market@127.0.0.1" uuid="1499c0cf-7c6b-4b68-942c-482e3f9a915a">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
