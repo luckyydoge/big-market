@@ -1,9 +1,15 @@
 package cn.bugstack.infrastructure.persistent.repository;
 
 import cn.bugstack.domain.model.entity.StrategyAwardEntity;
+import cn.bugstack.domain.model.entity.StrategyEntity;
+import cn.bugstack.domain.model.entity.StrategyRuleEntity;
 import cn.bugstack.domain.model.repository.IStrategyRepository;
 import cn.bugstack.infrastructure.persistent.dao.IStrategyAwardDao;
+import cn.bugstack.infrastructure.persistent.dao.IStrategyDao;
+import cn.bugstack.infrastructure.persistent.dao.IStrategyRuleDao;
+import cn.bugstack.infrastructure.persistent.po.Strategy;
 import cn.bugstack.infrastructure.persistent.po.StrategyAward;
+import cn.bugstack.infrastructure.persistent.po.StrategyRule;
 import cn.bugstack.infrastructure.persistent.redis.IRedisService;
 import cn.bugstack.types.common.Constants;
 import org.springframework.stereotype.Repository;
@@ -16,6 +22,12 @@ import java.util.Map;
 
 @Repository
 public class StrategyRepository implements IStrategyRepository {
+
+    @Resource
+    private IStrategyDao strategyDao;
+
+    @Resource
+    private IStrategyRuleDao strategyRuleDao;
 
     @Resource
     private IStrategyAwardDao strategyAwardDao;
@@ -47,20 +59,59 @@ public class StrategyRepository implements IStrategyRepository {
     }
 
     @Override
-    public void storeStrategyAwardSearchTable(Long strategyId, BigDecimal rateRange, Map<Integer, Integer> shuffleStrategyAwardSearchTable) {
-        redisService.setValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + strategyId, rateRange.intValue());
-        Map<Object, Object> map = redisService.getMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + strategyId);
+    public void storeStrategyAwardSearchTable(String key, BigDecimal rateRange, Map<Integer, Integer> shuffleStrategyAwardSearchTable) {
+        redisService.setValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + key, rateRange.intValue());
+        Map<Object, Object> map = redisService.getMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + key);
         map.putAll(shuffleStrategyAwardSearchTable);
 
     }
 
     @Override
     public int getRageRange(Long strategyId) {
-        return redisService.getValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + strategyId);
+        return getRageRange(String.valueOf(strategyId));
     }
 
     @Override
-    public Integer getStrategyAwardAssemble(Long strategyId, int rate) {
-        return redisService.getFromMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + strategyId, rate);
+    public Integer getStrategyAwardAssemble(String key, int rate) {
+        return redisService.getFromMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + key, rate);
+    }
+
+    @Override
+    public StrategyEntity queryStrategyEntityById(Long strategyId) {
+        String cacheKey = Constants.RedisKey.STRATEGY_KEY + strategyId;
+        StrategyEntity strategyEntity = redisService.getValue(cacheKey);
+        if (null != strategyEntity) {
+            return strategyEntity;
+        }
+        Strategy strategy = strategyDao.queryStrategyById(strategyId);
+        strategyEntity = StrategyEntity.builder()
+                .strategyDesc(strategy.getStrategyDesc())
+                .strategyId(strategy.getStrategyId())
+                .ruleModels(strategy.getRuleModels())
+                .build();
+        redisService.setValue(cacheKey, strategyEntity);
+        return strategyEntity;
+    }
+
+    @Override
+    public StrategyRuleEntity queryStrategyRule(Long strategyId, String ruleModel) {
+        StrategyRule strategyRuleReq = new StrategyRule();
+        strategyRuleReq.setStrategyId(strategyId);
+        strategyRuleReq.setRuleModel(ruleModel);
+        StrategyRule strategyRuleRes = strategyRuleDao.queryStrategyRule(strategyRuleReq);
+        return StrategyRuleEntity.builder()
+                .strategyId(strategyRuleRes.getStrategyId())
+                .ruleDesc(strategyRuleRes.getRuleDesc())
+                .ruleModel(strategyRuleRes.getRuleModel())
+                .ruleType(strategyRuleRes.getRuleType())
+                .awardId(strategyRuleRes.getAwardId())
+                .ruleValue(strategyRuleRes.getRuleValue())
+                .build();
+
+    }
+
+    @Override
+    public int getRageRange(String key) {
+        return redisService.getValue(Constants.RedisKey.STRATEGY_RATE_RANGE_KEY + key);
     }
 }

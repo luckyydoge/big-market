@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 public class StrategyRule {
     private Long id;
-    private Integer strategyId;
+    private Long strategyId;
     private Integer awardId;
     private Short ruleType;
     private String ruleModel;

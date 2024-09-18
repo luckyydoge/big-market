@@ -16,7 +16,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StrategyRuleEntity {
-    private Integer strategyId;
+    private Long strategyId;
     private Integer awardId;
     private Short ruleType;
     private String ruleModel;
