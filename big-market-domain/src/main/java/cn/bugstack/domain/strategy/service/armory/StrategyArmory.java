@@ -1,9 +1,9 @@
-package cn.bugstack.domain.model.service.armory;
+package cn.bugstack.domain.strategy.service.armory;
 
-import cn.bugstack.domain.model.entity.StrategyAwardEntity;
-import cn.bugstack.domain.model.entity.StrategyEntity;
-import cn.bugstack.domain.model.entity.StrategyRuleEntity;
-import cn.bugstack.domain.model.repository.IStrategyRepository;
+import cn.bugstack.domain.strategy.model.entity.StrategyAwardEntity;
+import cn.bugstack.domain.strategy.model.entity.StrategyEntity;
+import cn.bugstack.domain.strategy.model.entity.StrategyRuleEntity;
+import cn.bugstack.domain.strategy.repository.IStrategyRepository;
 import cn.bugstack.types.enums.ResponseCode;
 import cn.bugstack.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class StrategyArmory implements IStrategyArmory, IStrategyDispatch {
     private IStrategyRepository repository;
 
     @Override
-    public boolean assmbleLotteryStrategy(Long strategyId) {
+    public boolean assembleLotteryStrategy(Long strategyId) {
         List<StrategyAwardEntity> strategyAwardEntities = repository.queryStrategyAwardList(strategyId);
         assmbleLotteryStrategy(String.valueOf(strategyId), strategyAwardEntities);
 

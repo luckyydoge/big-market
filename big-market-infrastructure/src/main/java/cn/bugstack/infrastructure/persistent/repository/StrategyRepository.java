@@ -1,9 +1,9 @@
 package cn.bugstack.infrastructure.persistent.repository;
 
-import cn.bugstack.domain.model.entity.StrategyAwardEntity;
-import cn.bugstack.domain.model.entity.StrategyEntity;
-import cn.bugstack.domain.model.entity.StrategyRuleEntity;
-import cn.bugstack.domain.model.repository.IStrategyRepository;
+import cn.bugstack.domain.strategy.model.entity.StrategyAwardEntity;
+import cn.bugstack.domain.strategy.model.entity.StrategyEntity;
+import cn.bugstack.domain.strategy.model.entity.StrategyRuleEntity;
+import cn.bugstack.domain.strategy.repository.IStrategyRepository;
 import cn.bugstack.infrastructure.persistent.dao.IStrategyAwardDao;
 import cn.bugstack.infrastructure.persistent.dao.IStrategyDao;
 import cn.bugstack.infrastructure.persistent.dao.IStrategyRuleDao;
@@ -74,6 +74,15 @@ public class StrategyRepository implements IStrategyRepository {
     @Override
     public Integer getStrategyAwardAssemble(String key, int rate) {
         return redisService.getFromMap(Constants.RedisKey.STRATEGY_RATE_TABLE_KEY + key, rate);
+    }
+
+    @Override
+    public String queryStrategyRuleValue(Long strategyId, String ruleModel, Integer awardId) {
+        StrategyRule strategyRule = new StrategyRule();
+        strategyRule.setStrategyId(strategyId);
+        strategyRule.setRuleModel(ruleModel);
+        strategyRule.setAwardId(awardId);
+        return strategyRuleDao.queryStrategyRuleValue(strategyRule);
     }
 
     @Override

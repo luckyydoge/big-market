@@ -1,7 +1,7 @@
 package cn.bugstack.test.domain;
 
-import cn.bugstack.domain.model.service.armory.IStrategyArmory;
-import cn.bugstack.domain.model.service.armory.IStrategyDispatch;
+import cn.bugstack.domain.strategy.service.armory.IStrategyArmory;
+import cn.bugstack.domain.strategy.service.armory.IStrategyDispatch;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +28,7 @@ public class StrategyArmoryTest {
     @Before
     public void test_strategyAssemble() {
 //        strategyArmory.assmbleLotteryStrategy(100002L);
-        strategyArmory.assmbleLotteryStrategy(100001L);
+        strategyArmory.assembleLotteryStrategy(100001L);
     }
 
 

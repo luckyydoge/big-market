@@ -1,8 +1,8 @@
-package cn.bugstack.domain.model.repository;
+package cn.bugstack.domain.strategy.repository;
 
-import cn.bugstack.domain.model.entity.StrategyAwardEntity;
-import cn.bugstack.domain.model.entity.StrategyEntity;
-import cn.bugstack.domain.model.entity.StrategyRuleEntity;
+import cn.bugstack.domain.strategy.model.entity.StrategyAwardEntity;
+import cn.bugstack.domain.strategy.model.entity.StrategyEntity;
+import cn.bugstack.domain.strategy.model.entity.StrategyRuleEntity;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,4 +23,6 @@ public interface IStrategyRepository {
     int getRageRange(String key);
 
     Integer getStrategyAwardAssemble(String key, int rate);
+
+    String queryStrategyRuleValue(Long strategyId, String ruleModel, Integer awardId);
 }
