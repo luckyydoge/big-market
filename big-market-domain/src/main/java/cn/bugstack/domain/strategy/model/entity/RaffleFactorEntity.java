@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class RaffleFactorEntity {
     String userId;
     Long strategyId;
+    Integer awardId;
 }

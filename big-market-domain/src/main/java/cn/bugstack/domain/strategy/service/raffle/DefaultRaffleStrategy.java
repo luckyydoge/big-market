@@ -3,7 +3,7 @@ package cn.bugstack.domain.strategy.service.raffle;
 import cn.bugstack.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.bugstack.domain.strategy.model.entity.RuleActionEntity;
 import cn.bugstack.domain.strategy.model.entity.RuleMatterEntity;
-import cn.bugstack.domain.strategy.model.vo.RuleLogicCheckTypeVO;
+import cn.bugstack.domain.strategy.model.valobj.RuleLogicCheckTypeVO;
 import cn.bugstack.domain.strategy.repository.IStrategyRepository;
 import cn.bugstack.domain.strategy.service.armory.IStrategyDispatch;
 import cn.bugstack.domain.strategy.service.rule.ILogicFilter;
@@ -31,6 +31,13 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
 
     @Override
     protected RuleActionEntity<RuleActionEntity.RaffleBeforeEntity> doCheckRaffleBeforeLogic(RaffleFactorEntity raffleFactorEntity, String... logics) {
+
+        if (null == logics || logics.length == 0) {
+            return RuleActionEntity.<RuleActionEntity.RaffleBeforeEntity>builder()
+                    .code(RuleLogicCheckTypeVO.ALLOW.getCode())
+                    .info(RuleLogicCheckTypeVO.ALLOW.getInfo())
+                    .build();
+        }
 
         Map<String, ILogicFilter<RuleActionEntity.RaffleBeforeEntity>> filterMap = logicFactory.openFilters();
 
@@ -70,6 +77,35 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
                 return ruleActionEntity;
             }
         }
+        return ruleActionEntity;
+    }
+
+    @Override
+    protected RuleActionEntity<RuleActionEntity.RaffleCenterEntity> doCheckRaffleCenterLogic(RaffleFactorEntity raffleFactorEntity, String... logics) {
+        if (null == logics || logics.length == 0) {
+            return RuleActionEntity.<RuleActionEntity.RaffleCenterEntity>builder()
+                    .code(RuleLogicCheckTypeVO.ALLOW.getCode())
+                    .info(RuleLogicCheckTypeVO.ALLOW.getInfo())
+                    .build();
+        }
+
+        Map<String, ILogicFilter<RuleActionEntity.RaffleCenterEntity>> filterMap = logicFactory.openFilters();
+        RuleActionEntity<RuleActionEntity.RaffleCenterEntity> ruleActionEntity = null;
+
+        for (String ruleModel : logics) {
+            ILogicFilter<RuleActionEntity.RaffleCenterEntity> iLogicFilter = filterMap.get(ruleModel);
+            RuleMatterEntity ruleMatterEntity = RuleMatterEntity.builder()
+                    .ruleModel(ruleModel)
+                    .strategyId(raffleFactorEntity.getStrategyId())
+                    .userId(raffleFactorEntity.getUserId())
+                    .awardId(raffleFactorEntity.getAwardId())
+                    .build();
+            ruleActionEntity = iLogicFilter.filter(ruleMatterEntity);
+            if (!RuleLogicCheckTypeVO.ALLOW.getCode().equals(ruleActionEntity.getCode())) {
+                return ruleActionEntity;
+            }
+        }
+
         return ruleActionEntity;
     }
 }
