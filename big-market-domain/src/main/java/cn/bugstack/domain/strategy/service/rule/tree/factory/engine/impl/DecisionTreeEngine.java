@@ -25,8 +25,8 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
     }
 
     @Override
-    public DefaultTreeFactory.StrategyAwardData process(Long strategyId, String userId, Integer awardId) {
-        DefaultTreeFactory.StrategyAwardData strategyAwardData = null;
+    public DefaultTreeFactory.StrategyAwardVO process(Long strategyId, String userId, Integer awardId) {
+        DefaultTreeFactory.StrategyAwardVO strategyAwardData = null;
         String nextTreeNode = ruleTreeVO.getTreeRootRuleNode();
         Map<String, RuleTreeNodeVO> treeNodeMap = ruleTreeVO.getTreeNodeMap();
         RuleTreeNodeVO ruleTreeNode = treeNodeMap.get(nextTreeNode);
