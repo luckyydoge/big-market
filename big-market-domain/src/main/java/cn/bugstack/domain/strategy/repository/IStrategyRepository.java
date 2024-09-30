@@ -5,6 +5,7 @@ import cn.bugstack.domain.strategy.model.entity.StrategyEntity;
 import cn.bugstack.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.bugstack.domain.strategy.model.valobj.RuleTreeVO;
 import cn.bugstack.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
+import cn.bugstack.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,4 +34,14 @@ public interface IStrategyRepository {
     String queryStrategyRuleValue(Long strategyId, String s);
 
     RuleTreeVO queryRuleTreeVOByTreeId(String treeLock);
+
+    void awardStockConsumeSendQueue(StrategyAwardStockKeyVO strategyAwardStockKeyVO);
+
+    StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException;
+
+    void updateStrategyAwardStock(Long strategyId, Integer awardId);
+
+    Boolean subtractionAwardStock(String cacheKey);
+
+    void cacheStrategyAwardCount(String cacheKey, Integer awardCount);
 }

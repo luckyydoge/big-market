@@ -2,20 +2,23 @@ package cn.bugstack.domain.strategy.model.valobj;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
  * @author Fuzhengwei bugstack.cn @小傅哥
- * @description 抽奖策略规则规则值对象；值对象，没有唯一ID，仅限于从数据库查询对象
- * @create 2024-01-13 09:30
+ * @description 策略奖品库存Key标识值对象
+ * @create 2024-02-09 11:24
  */
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StrategyAwardRuleModelVO {
+public class StrategyAwardStockKeyVO {
 
-    private String ruleModels;
+    // 策略ID
+    private Long strategyId;
+    // 奖品ID
+    private Integer awardId;
 
 }

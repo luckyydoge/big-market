@@ -2,25 +2,21 @@ package cn.bugstack.domain.strategy.service.raffle;
 
 import cn.bugstack.domain.strategy.model.valobj.RuleTreeVO;
 import cn.bugstack.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
+import cn.bugstack.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 import cn.bugstack.domain.strategy.repository.IStrategyRepository;
 import cn.bugstack.domain.strategy.service.AbstractRaffleStrategy;
 import cn.bugstack.domain.strategy.service.armory.IStrategyDispatch;
 import cn.bugstack.domain.strategy.service.rule.chain.ILogicChain;
 import cn.bugstack.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
-import cn.bugstack.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import cn.bugstack.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import cn.bugstack.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-
 @Slf4j
 @Service
 public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
 
-    @Resource
-    DefaultLogicFactory logicFactory;
 
     public DefaultRaffleStrategy(IStrategyRepository repository, IStrategyDispatch dispatch, DefaultChainFactory chainFactory, DefaultTreeFactory treeFactory) {
         super(repository, dispatch, chainFactory, treeFactory);
@@ -47,4 +43,13 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
         return treeEngine.process(strategyId, userId, awardId);
     }
 
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException {
+        return repository.takeQueueValue();
+    }
+
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
+        repository.updateStrategyAwardStock(strategyId, awardId);
+    }
 }
