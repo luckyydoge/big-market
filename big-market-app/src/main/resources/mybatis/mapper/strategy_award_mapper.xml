@@ -57,4 +57,10 @@
         where strategy_id = #{strategyId} and award_count_surplus > 0 and award_id = #{awardId}
     </update>
 
+    <select id="queryStrategyAward" parameterType="cn.bugstack.infrastructure.persistent.po.StrategyAward" resultMap="dataMap">
+        select strategy_id, award_id, award_count_surplus, award_count, sort, award_subtitle, award_title, rule_models
+            from strategy_award
+        where strategy_id = #{strategyId} and award_id = #{awardId}
+    </select>
+
 </mapper>
