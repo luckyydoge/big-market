@@ -9,5 +9,10 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
+    <select id="queryRaffleActivityCountByActivityCountId" parameterType="java.lang.Long" resultMap="dataMap">
+        select id, activity_count_id, total_count, day_count, month_count, create_time, update_time
+        from raffle_activity_count
+        where activity_count_id = #{activityCountId}
+    </select>
 
 </mapper>

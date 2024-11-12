@@ -7,11 +7,11 @@ import java.util.Date;
 @Data
 public class RaffleActivityCount {
 
-  private long id;
-  private long activityCountId;
-  private long totalCount;
-  private long dayCount;
-  private long monthCount;
+  private Long id;
+  private Long activityCountId;
+  private Integer totalCount;
+  private Integer dayCount;
+  private Integer monthCount;
   private Date createTime;
   private Date updateTime;
 }

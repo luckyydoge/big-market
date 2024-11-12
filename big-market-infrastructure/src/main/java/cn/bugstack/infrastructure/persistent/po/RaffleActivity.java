@@ -4,20 +4,62 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * @author Fuzhengwei bugstack.cn @小傅哥
+ * @description 抽奖活动表 持久化对象
+ * @create 2024-03-02 13:06
+ */
 @Data
 public class RaffleActivity {
 
-  private long id;
-  private long activityId;
+  /**
+   * 自增ID
+   */
+  private Long id;
+
+  /**
+   * 活动ID
+   */
+  private Long activityId;
+
+  /**
+   * 活动名称
+   */
   private String activityName;
+
+  /**
+   * 活动描述
+   */
   private String activityDesc;
+
+  /**
+   * 开始时间
+   */
   private Date beginDateTime;
+
+  /**
+   * 结束时间
+   */
   private Date endDateTime;
-  private long stockCount;
-  private long stockCountSurplus;
-  private long activityCountId;
-  private long strategyId;
+
+  /**
+   * 抽奖策略ID
+   */
+  private Long strategyId;
+
+  /**
+   * 活动状态
+   */
   private String state;
+
+  /**
+   * 创建时间
+   */
   private Date createTime;
+
+  /**
+   * 更新时间
+   */
   private Date updateTime;
+
 }
