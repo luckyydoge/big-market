@@ -14,7 +14,7 @@
 
     <select id="queryActivitySku" parameterType="java.lang.Long" resultMap="dataMap">
         select sku, stock_count, stock_count_surplus, create_time, update_time, activity_count_id, activity_id
-            from raffle_activity_sku
+        from raffle_activity_sku
         where sku = #{sku}
     </select>
 

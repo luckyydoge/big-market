@@ -77,4 +77,7 @@ public class RaffleActivityOrder {
    */
   private Date updateTime;
 
+  private String outBusinessNo;
+
+  private Long sku;
 }

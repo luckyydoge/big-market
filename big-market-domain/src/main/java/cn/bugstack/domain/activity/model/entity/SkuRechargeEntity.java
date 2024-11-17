@@ -14,11 +14,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityShopCartEntity {
+public class SkuRechargeEntity {
 
     /** 用户ID */
     private String userId;
     /** 商品SKU - activity + activity count */
     private Long sku;
+
+    private String outBusinessNo;
 
 }
