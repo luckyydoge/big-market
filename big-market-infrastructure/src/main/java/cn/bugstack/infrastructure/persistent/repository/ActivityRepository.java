@@ -1,23 +1,32 @@
 package cn.bugstack.infrastructure.persistent.repository;
 
+import cn.bugstack.domain.activity.event.ActivitySkuStockZeroMessageEvent;
 import cn.bugstack.domain.activity.model.aggregate.CreateOrderAggregate;
 import cn.bugstack.domain.activity.model.entity.ActivityCountEntity;
 import cn.bugstack.domain.activity.model.entity.ActivityEntity;
 import cn.bugstack.domain.activity.model.entity.ActivityOrderEntity;
 import cn.bugstack.domain.activity.model.entity.ActivitySkuEntity;
+import cn.bugstack.domain.activity.model.valobj.ActivitySkuStockKeyVO;
 import cn.bugstack.domain.activity.model.valobj.ActivityStateVO;
 import cn.bugstack.domain.activity.repository.IActivityRepository;
+import cn.bugstack.infrastructure.event.EventPublisher;
 import cn.bugstack.infrastructure.persistent.dao.*;
 import cn.bugstack.infrastructure.persistent.po.*;
+import cn.bugstack.infrastructure.persistent.redis.IRedisService;
 import cn.bugstack.middleware.db.router.strategy.IDBRouterStrategy;
+import cn.bugstack.types.common.Constants;
 import cn.bugstack.types.enums.ResponseCode;
 import cn.bugstack.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBlockingQueue;
+import org.redisson.api.RDelayedQueue;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 @Slf4j
@@ -39,6 +48,15 @@ public class ActivityRepository implements IActivityRepository {
     IRaffleActivitySkuDao activitySkuDao;
 
     @Resource
+    IRedisService redisService;
+
+    @Resource
+    EventPublisher eventPublisher;
+
+    @Resource
+    ActivitySkuStockZeroMessageEvent activitySkuStockZeroMessageEvent;
+
+    @Resource
     IDBRouterStrategy dbRouter;
 
     @Resource
@@ -47,12 +65,17 @@ public class ActivityRepository implements IActivityRepository {
 
     @Override
     public ActivitySkuEntity queryActivitySku(Long sku) {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_STOCK_COUNT_KEY + sku;
+        Long cacheSkuStock = redisService.getAtomicLong(cacheKey);
+        if (null == cacheSkuStock || 0 == cacheSkuStock) {
+            cacheSkuStock = 0L;
+        }
         RaffleActivitySku raffleActivitySku = activitySkuDao.queryActivitySku(sku);
 
         return ActivitySkuEntity.builder()
                 .sku(raffleActivitySku.getSku())
                 .activityId(raffleActivitySku.getActivityId())
-                .stockCountSurplus(raffleActivitySku.getStockCountSurplus())
+                .stockCountSurplus(cacheSkuStock.intValue())
                 .stockCount(raffleActivitySku.getStockCount())
                 .activityCountId(raffleActivitySku.getActivityCountId())
                 .build();
@@ -60,20 +83,28 @@ public class ActivityRepository implements IActivityRepository {
 
     @Override
     public ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId) {
+        String cacheKey = Constants.RedisKey.ACTIVITY_COUNT_KEY + activityCountId;
+        ActivityCountEntity activityCountEntity = redisService.getValue(cacheKey);
+        if (null != activityCountEntity) return activityCountEntity;
         RaffleActivityCount raffleActivityCount = activityCountDao.queryRaffleActivityCountByActivityCountId(activityCountId);
 
-        return ActivityCountEntity.builder()
+        activityCountEntity = ActivityCountEntity.builder()
                 .activityCountId(raffleActivityCount.getActivityCountId())
                 .dayCount(raffleActivityCount.getDayCount())
                 .monthCount(raffleActivityCount.getMonthCount())
                 .totalCount(raffleActivityCount.getTotalCount())
                 .build();
+        redisService.setValue(cacheKey, activityCountEntity);
+        return activityCountEntity;
     }
 
     @Override
     public ActivityEntity queryRaffleActivityByActivityId(Long activityId) {
+        String cacheKey = Constants.RedisKey.ACTIVITY_KEY + activityId;
+        ActivityEntity activityEntity = redisService.getValue(cacheKey);
+        if (null != activityEntity) return activityEntity;
         RaffleActivity raffleActivity = activityDao.queryRaffleActivityByActivityId(activityId);
-        return ActivityEntity.builder()
+        activityEntity = ActivityEntity.builder()
                 .activityDesc(raffleActivity.getActivityDesc())
                 .activityId(raffleActivity.getActivityId())
                 .activityName(raffleActivity.getActivityName())
@@ -82,6 +113,8 @@ public class ActivityRepository implements IActivityRepository {
                 .strategyId(raffleActivity.getStrategyId())
                 .state(ActivityStateVO.valueOf(raffleActivity.getState()))
                 .build();
+        redisService.setValue(cacheKey, activityEntity);
+        return activityEntity;
     }
 
     @Override
@@ -119,7 +152,7 @@ public class ActivityRepository implements IActivityRepository {
 
             dbRouter.doRouter(createOrderAggregate.getUserId());
             transactionTemplate.execute(status -> {
-                try{
+                try {
                     raffleActivityOrderDao.insert(raffleActivityOrder);
                     int count = raffleActivityAccountDao.updateAccountQuota(raffleActivityAccount);
                     if (count == 0) {
@@ -135,5 +168,65 @@ public class ActivityRepository implements IActivityRepository {
         } finally {
             dbRouter.clear();
         }
+    }
+
+    @Override
+    public void cacheActivitySkuStockCount(String cacheKey, Integer stockCount) {
+        if (redisService.isExists(cacheKey)) return;
+        redisService.setAtomicLong(cacheKey, stockCount);
+
+    }
+
+    @Override
+    public boolean subtractionActivitySkuStock(Long sku, String cacheKey, Date endDateTime) {
+        long surplus = redisService.decr(cacheKey);
+        if (surplus == 0) {
+            eventPublisher.publish(activitySkuStockZeroMessageEvent.topic(), activitySkuStockZeroMessageEvent.buildEventMessage(sku));
+            return false;
+        } else if (surplus < 0) {
+            redisService.setAtomicLong(cacheKey, 0);
+            return false;
+        }
+        String lockKey = cacheKey + Constants.UNDERLINE + surplus;
+        long expireMillis = endDateTime.getTime() - System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1);
+        boolean lock = redisService.setNx(lockKey, expireMillis, TimeUnit.MILLISECONDS);
+        if (!lock) {
+            log.info("活动sku库存加锁失败 {}", lockKey);
+        }
+        return lock;
+    }
+
+    @Override
+    public void activitySkuStockConsumeSendQueue(ActivitySkuStockKeyVO activitySkuStockKeyVO) {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
+        RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
+        RDelayedQueue<ActivitySkuStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
+        delayedQueue.offer(activitySkuStockKeyVO, 3, TimeUnit.SECONDS);
+
+    }
+
+    @Override
+    public ActivitySkuStockKeyVO takeQueueValue() {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
+        RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
+        return blockingQueue.poll();
+    }
+
+    @Override
+    public void updateActivitySkuStock(Long sku) {
+        activitySkuDao.updateActivitySkuStock(sku);
+
+    }
+
+    @Override
+    public void clearActivitySkuStock(Long sku) {
+        activitySkuDao.clearActivitySkuStock(sku);
+    }
+
+    @Override
+    public void clearQueueValue() {
+        String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUERY_KEY;
+        RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
+        blockingQueue.clear();
     }
 }
