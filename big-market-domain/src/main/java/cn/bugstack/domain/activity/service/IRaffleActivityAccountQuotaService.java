@@ -2,7 +2,7 @@ package cn.bugstack.domain.activity.service;
 
 import cn.bugstack.domain.activity.model.entity.SkuRechargeEntity;
 
-public interface IRaffleOrder {
+public interface IRaffleActivityAccountQuotaService {
 
-    String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity);
+    String createOrder(SkuRechargeEntity skuRechargeEntity);
 }
