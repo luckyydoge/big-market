@@ -1,12 +1,8 @@
-package cn.bugstack.test.domain.activity;
+package cn.bugstack.test.domain.award;
 
-import cn.bugstack.domain.activity.model.entity.PartakeRaffleActivityEntity;
-import cn.bugstack.domain.activity.model.entity.UserRaffleOrderEntity;
-import cn.bugstack.domain.activity.service.IRaffleActivityPartakeService;
 import cn.bugstack.domain.award.model.entity.UserAwardRecordEntity;
 import cn.bugstack.domain.award.model.valobj.AwardStateVO;
 import cn.bugstack.domain.award.service.IAwardService;
-import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -17,33 +13,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class RaffleActivityPartakeServiceTest {
+public class AwardTest {
 
     @Resource
-    private IRaffleActivityPartakeService raffleActivityPartakeService;
-
-    @Resource
-    private IAwardService awardService;
-
-    @Test
-    public void test_createOrder() {
-        // 请求参数
-        PartakeRaffleActivityEntity partakeRaffleActivityEntity = new PartakeRaffleActivityEntity();
-        partakeRaffleActivityEntity.setUserId("xiaofuge");
-        partakeRaffleActivityEntity.setActivityId(100301L);
-        // 调用接口
-        UserRaffleOrderEntity userRaffleOrder = raffleActivityPartakeService.createOrder(partakeRaffleActivityEntity);
-        log.info("请求参数：{}", JSON.toJSONString(partakeRaffleActivityEntity));
-        log.info("测试结果：{}", JSON.toJSONString(userRaffleOrder));
-    }
+    IAwardService  awardService;
 
     @Test
     public void test_saveUserAwardRecord() throws InterruptedException {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5; i++) {
             UserAwardRecordEntity userAwardRecordEntity = new UserAwardRecordEntity();
             userAwardRecordEntity.setUserId("xiaofuge");
             userAwardRecordEntity.setActivityId(100301L);
@@ -56,8 +38,6 @@ public class RaffleActivityPartakeServiceTest {
             awardService.saveUserAwardRecord(userAwardRecordEntity);
             Thread.sleep(500);
         }
-        new CountDownLatch(1).await();
+        new CountDownLatch(1).await(10, TimeUnit.SECONDS);
     }
-
-
 }
