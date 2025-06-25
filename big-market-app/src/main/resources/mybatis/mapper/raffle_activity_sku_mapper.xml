@@ -17,6 +17,26 @@
         from raffle_activity_sku
         where sku = #{sku}
     </select>
+    <select id="querySkuList" parameterType="cn.bugstack.infrastructure.persistent.po.RaffleActivitySku" resultMap="dataMap">
+        select sku, stock_count, stock_count_surplus, create_time, update_time, activity_count_id, activity_id
+        from raffle_activity_sku
+        where 1 = 1
+        <if test="sku != null and sku != ''">
+            and sku = #{sku}
+        </if>
+        <if test="stockCount != null and stockCount != ''">
+            and stock_count = #{stockCount}
+        </if>
+        <if test="stockCountSurplus != null and stockCountSurplus != ''">
+            and stock_count_surplus = #{stockCountSurplus}
+        </if>
+        <if test="activityId != null and activityId != ''">
+            and activity_id = #{activityId}
+        </if>
+        <if test="activityCountId != null and activityCountId != ''">
+            and activity_count_id = #{activityCountId}
+        </if>
+    </select>
 
     <update id="updateActivitySkuStock" parameterType="java.lang.Long">
         update raffle_activity_sku
