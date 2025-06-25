@@ -24,7 +24,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -428,5 +431,23 @@ public class ActivityRepository implements IActivityRepository {
         } finally {
             dbRouter.clear();
         }
+    }
+
+    @Override
+    public List<ActivitySkuEntity> queryRaffleSkuListByActivityId(Long activityId) {
+        RaffleActivitySku raffleActivitySkuReq = new RaffleActivitySku();
+        raffleActivitySkuReq.setActivityId(activityId);
+        List<RaffleActivitySku> raffleActivitySkuList = activitySkuDao.querySkuList(raffleActivitySkuReq);
+        List<ActivitySkuEntity> activitySkuEntityList = new ArrayList<>();
+        for (RaffleActivitySku raffleActivitySku : raffleActivitySkuList) {
+            ActivitySkuEntity activitySkuEntity = new ActivitySkuEntity();
+            activitySkuEntity.setActivityId(raffleActivitySku.getActivityId());
+            activitySkuEntity.setSku(raffleActivitySku.getSku());
+            activitySkuEntity.setActivityCountId(raffleActivitySku.getActivityCountId());
+            activitySkuEntity.setStockCount(raffleActivitySku.getStockCount());
+            activitySkuEntity.setStockCountSurplus(raffleActivitySku.getStockCountSurplus());
+            activitySkuEntityList.add(activitySkuEntity);
+        }
+        return activitySkuEntityList;
     }
 }

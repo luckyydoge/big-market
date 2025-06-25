@@ -1,11 +1,18 @@
 package cn.bugstack.test.domain.activity;
 
+import cn.bugstack.domain.activity.model.entity.ActivityEntity;
 import cn.bugstack.domain.activity.model.entity.PartakeRaffleActivityEntity;
 import cn.bugstack.domain.activity.model.entity.UserRaffleOrderEntity;
+import cn.bugstack.domain.activity.repository.IActivityRepository;
 import cn.bugstack.domain.activity.service.IRaffleActivityPartakeService;
 import cn.bugstack.domain.award.model.entity.UserAwardRecordEntity;
 import cn.bugstack.domain.award.model.valobj.AwardStateVO;
 import cn.bugstack.domain.award.service.IAwardService;
+import cn.bugstack.domain.strategy.model.entity.RaffleAwardEntity;
+import cn.bugstack.domain.strategy.model.entity.RaffleFactorEntity;
+import cn.bugstack.domain.strategy.service.IRaffleStrategy;
+import cn.bugstack.types.enums.ResponseCode;
+import cn.bugstack.types.exception.AppException;
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -24,10 +31,16 @@ import java.util.concurrent.CountDownLatch;
 public class RaffleActivityPartakeServiceTest {
 
     @Resource
+    IRaffleStrategy raffleStrategy;
+
+    @Resource
     private IRaffleActivityPartakeService raffleActivityPartakeService;
 
     @Resource
     private IAwardService awardService;
+
+    @Resource
+    IActivityRepository activityRepository;
 
     @Test
     public void test_createOrder() {
@@ -43,7 +56,7 @@ public class RaffleActivityPartakeServiceTest {
 
     @Test
     public void test_saveUserAwardRecord() throws InterruptedException {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             UserAwardRecordEntity userAwardRecordEntity = new UserAwardRecordEntity();
             userAwardRecordEntity.setUserId("xiaofuge");
             userAwardRecordEntity.setActivityId(100301L);
@@ -57,6 +70,48 @@ public class RaffleActivityPartakeServiceTest {
             Thread.sleep(500);
         }
         new CountDownLatch(1).await();
+    }
+
+    @Test
+    public void test_ActivityRaffle() throws InterruptedException {
+
+        String userId = "xiaofuge";
+        Long activityId = 100301L;
+        ActivityEntity activityEntity = activityRepository.queryRaffleActivityByActivityId(activityId);
+
+        if (userId == null || activityId == null || userId.isEmpty()) {
+            log.error("userId and activityId can't be null or empty");
+            throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
+        }
+        PartakeRaffleActivityEntity partakeRaffleActivityEntity = PartakeRaffleActivityEntity.builder()
+                .activityId(activityId)
+                .userId(userId)
+                .build();
+        UserRaffleOrderEntity userRaffleOrder = raffleActivityPartakeService.createOrder(partakeRaffleActivityEntity);
+        RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
+                .userId(userId)
+                .strategyId(activityEntity.getStrategyId())
+                .build();
+        RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
+        UserAwardRecordEntity userAwardRecordEntity = UserAwardRecordEntity.builder()
+                .awardId(raffleAwardEntity.getAwardId())
+                .activityId(activityId)
+                .userId(userId)
+                .strategyId(activityEntity.getStrategyId())
+                .orderId(userRaffleOrder.getOrderId())
+                .awardTime(new Date())
+                .awardState(AwardStateVO.create)
+                .awardTitle(raffleAwardEntity.getAwardTitle())
+                .build();
+        awardService.saveUserAwardRecord(userAwardRecordEntity);
+    }
+
+    @Test
+    public void test_Random(){
+        for (int i = 0; i < 10; i++) {
+            System.out.println(RandomStringUtils.randomNumeric(12));
+        }
+
     }
 
 
