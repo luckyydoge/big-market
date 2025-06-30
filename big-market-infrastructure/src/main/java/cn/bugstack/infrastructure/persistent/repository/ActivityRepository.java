@@ -25,7 +25,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -449,5 +448,13 @@ public class ActivityRepository implements IActivityRepository {
             activitySkuEntityList.add(activitySkuEntity);
         }
         return activitySkuEntityList;
+    }
+
+    @Override
+    public Integer queryPartakeCnt(Long activityId, String userId) {
+        RaffleActivityAccount req = new RaffleActivityAccount();
+        req.setUserId(userId);
+        req.setActivityId(activityId);
+        return raffleActivityAccountDao.queryPartakeCnt(req);
     }
 }

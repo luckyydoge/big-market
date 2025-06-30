@@ -18,4 +18,7 @@ public interface IRaffleActivityAccountDao {
     void updateActivityAccountMonthSurplusImageQuota(RaffleActivityAccount build);
 
     void updateActivityAccountDaySurplusImageQuota(RaffleActivityAccount build);
+
+    @DBRouter
+    Integer queryPartakeCnt(RaffleActivityAccount req);
 }

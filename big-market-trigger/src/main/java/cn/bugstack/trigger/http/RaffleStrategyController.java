@@ -1,10 +1,12 @@
 package cn.bugstack.trigger.http;
 
 
+import cn.bugstack.domain.activity.service.IRaffleActivityAccountQuotaService;
 import cn.bugstack.domain.strategy.model.entity.RaffleAwardEntity;
 import cn.bugstack.domain.strategy.model.entity.RaffleFactorEntity;
 import cn.bugstack.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.bugstack.domain.strategy.service.IRaffleAward;
+import cn.bugstack.domain.strategy.service.IRaffleRule;
 import cn.bugstack.domain.strategy.service.IRaffleStrategy;
 import cn.bugstack.domain.strategy.service.armory.IStrategyArmory;
 import cn.bugstack.trigger.api.IRaffleStrategyService;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController()
@@ -38,10 +41,17 @@ public class RaffleStrategyController implements IRaffleStrategyService {
     @Resource
     private IRaffleAward award;
 
+    @Resource
+    private IRaffleRule raffleRule;
+
+    @Resource
+    private IRaffleActivityAccountQuotaService raffleActivityAccountQuotaService;
+
     @Override
     @RequestMapping(value = "strategy_armory", method = RequestMethod.GET)
     public Response<Boolean> strategyArmory(Long strategyId) {
-        try {log.info("抽奖策略装配开始 strategyId：{}", strategyId);
+        try {
+            log.info("抽奖策略装配开始 strategyId：{}", strategyId);
             boolean armoryStatus = armory.assembleLotteryStrategy(strategyId);
             Response<Boolean> response = Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
@@ -59,22 +69,42 @@ public class RaffleStrategyController implements IRaffleStrategyService {
                     .build();
 
         }
-     }
+    }
 
     @RequestMapping(value = "query_raffle_award_list", method = RequestMethod.POST)
     @Override
     public Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(@RequestBody RaffleAwardListRequestDTO requestDTO) {
         try {
             log.info("查询抽奖奖品列表配开始 strategyId：{}", requestDTO.getStrategyId());
+
+            // TODO: when userId is blank, return a new user id
+            String userId = requestDTO.getUserId();
+            Long activityId = requestDTO.getActivityId();
+            Long strategyId = 0L;
+
+            if (null == userId || null == activityId || userId.isEmpty()) {
+                throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
+            }
             // 查询奖品配置
-            List<StrategyAwardEntity> strategyAwardEntities = award.queryRaffleStrategyAwardList(requestDTO.getStrategyId());
+            List<StrategyAwardEntity> strategyAwardEntities = award.queryRaffleStrategyAwardListByActivityId(activityId);
+            String[] treeIds = strategyAwardEntities.stream()
+                    .map(StrategyAwardEntity::getRuleModels)
+                    .filter(ruleModel -> null != ruleModel && !ruleModel.isEmpty())
+                    .toArray(String[]::new);
+
+            Map<String, Integer> ruleLockCntMap = raffleRule.queryAwardRuleLockCnt(treeIds);
+            Integer partakeCnt = raffleActivityAccountQuotaService.queryPartakeCnt(activityId, userId);
             List<RaffleAwardListResponseDTO> raffleAwardListResponseDTOS = new ArrayList<>(strategyAwardEntities.size());
             for (StrategyAwardEntity strategyAward : strategyAwardEntities) {
+                Integer awardRuleLockCnt = ruleLockCntMap.get(strategyAward.getRuleModels());
                 raffleAwardListResponseDTOS.add(RaffleAwardListResponseDTO.builder()
                         .awardId(strategyAward.getAwardId())
                         .awardTitle(strategyAward.getAwardTitle())
                         .awardSubtitle(strategyAward.getAwardSubtitle())
                         .sort(strategyAward.getSort())
+                        .awardRuleLockCount(awardRuleLockCnt)
+                        .isAwardUnlock(null == awardRuleLockCnt || 0 == awardRuleLockCnt || partakeCnt >= awardRuleLockCnt)
+                        .waitUnlockCount(null == awardRuleLockCnt || 0 == awardRuleLockCnt || partakeCnt >= awardRuleLockCnt ? 0 : awardRuleLockCnt - partakeCnt)
                         .build());
             }
             Response<List<RaffleAwardListResponseDTO>> response = Response.<List<RaffleAwardListResponseDTO>>builder()
