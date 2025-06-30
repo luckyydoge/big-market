@@ -16,4 +16,9 @@
         from rule_tree_node
         where tree_id = #{treeId}
     </select>
+    <select id="queryRuleLockCnt" resultType="java.lang.Integer">
+        select rule_value
+        from rule_tree_node
+        where tree_id = #{treeId} and rule_key = 'rule_lock'
+    </select>
 </mapper>

@@ -74,4 +74,9 @@ public class RaffleActivityAccountQuotaService extends AbstractRaffleActivityAcc
         activityRepository.clearQueueValue();
 
     }
+
+    @Override
+    public Integer queryPartakeCnt(Long activityId, String userId) {
+        return activityRepository.queryPartakeCnt(activityId, userId);
+    }
 }

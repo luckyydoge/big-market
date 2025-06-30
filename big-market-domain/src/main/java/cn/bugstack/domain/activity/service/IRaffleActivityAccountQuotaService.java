@@ -5,4 +5,6 @@ import cn.bugstack.domain.activity.model.entity.SkuRechargeEntity;
 public interface IRaffleActivityAccountQuotaService {
 
     String createOrder(SkuRechargeEntity skuRechargeEntity);
+
+    Integer queryPartakeCnt(Long activityId, String userId);
 }

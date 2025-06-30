@@ -50,6 +50,9 @@ public class StrategyRepository implements IStrategyRepository {
     @Resource
     private IRuleTreeNodeLineDao ruleTreeNodeLineDao;
 
+    @Resource
+    private IRaffleActivityDao raffleActivityDao;
+
     @Override
     public List<StrategyAwardEntity> queryStrategyAwardList(Long strategyId) {
         String cacheKey = Constants.RedisKey.STRATEGY_AWARD_LIST_KEY + strategyId;
@@ -66,6 +69,7 @@ public class StrategyRepository implements IStrategyRepository {
                     .awardId(strategyAward.getAwardId())
                     .awardRate(strategyAward.getAwardRate())
                     .strategyId(strategyAward.getStrategyId())
+                    .ruleModels(strategyAward.getRuleModels())
                     .sort(strategyAward.getSort())
                     .awardSubtitle(strategyAward.getAwardSubtitle())
                     .awardTitle(strategyAward.getAwardTitle())
@@ -283,5 +287,22 @@ public class StrategyRepository implements IStrategyRepository {
         // 返回数据
         return strategyAwardEntity;
 
+    }
+
+    @Override
+    public Integer queryAwardRuleLockCnt(String treeId) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_RULE_LOCK_CNT_KEY + treeId;
+        Integer awardRuleLockCnt = redisService.getValue(cacheKey);
+        if (null != awardRuleLockCnt) return awardRuleLockCnt;
+        awardRuleLockCnt = ruleTreeNodeDao.queryRuleLockCnt(treeId);
+        awardRuleLockCnt = null == awardRuleLockCnt? 0 : awardRuleLockCnt;
+        redisService.setValue(cacheKey, awardRuleLockCnt);
+        return awardRuleLockCnt;
+
+    }
+
+    @Override
+    public Long queryStrategyIdByActivityId(Long activityId) {
+        return raffleActivityDao.queryStrategyIdByActivityId(activityId);
     }
 }

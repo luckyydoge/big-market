@@ -20,4 +20,10 @@ public class RaffleAwardListResponseDTO {
     // 排序编号
     private Integer sort;
 
+    private Integer awardRuleLockCount;
+
+    private Boolean isAwardUnlock;
+
+    private Integer waitUnlockCount;
+
 }
