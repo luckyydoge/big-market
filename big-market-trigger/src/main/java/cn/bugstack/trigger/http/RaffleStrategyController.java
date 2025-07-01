@@ -29,7 +29,7 @@ import java.util.Map;
 @Slf4j
 @RestController()
 @CrossOrigin("${app.config.cross-origin}")
-@RequestMapping("/api/${app.config.api-version}/raffle/")
+@RequestMapping("/api/${app.config.api-version}/raffle/strategy")
 public class RaffleStrategyController implements IRaffleStrategyService {
 
     @Resource
@@ -48,7 +48,7 @@ public class RaffleStrategyController implements IRaffleStrategyService {
     private IRaffleActivityAccountQuotaService raffleActivityAccountQuotaService;
 
     @Override
-    @RequestMapping(value = "strategy_armory", method = RequestMethod.GET)
+    @RequestMapping(value = "/strategy_armory", method = RequestMethod.GET)
     public Response<Boolean> strategyArmory(Long strategyId) {
         try {
             log.info("抽奖策略装配开始 strategyId：{}", strategyId);
@@ -71,7 +71,7 @@ public class RaffleStrategyController implements IRaffleStrategyService {
         }
     }
 
-    @RequestMapping(value = "query_raffle_award_list", method = RequestMethod.POST)
+    @RequestMapping(value = "/query_raffle_award_list", method = RequestMethod.POST)
     @Override
     public Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(@RequestBody RaffleAwardListRequestDTO requestDTO) {
         try {
@@ -104,7 +104,7 @@ public class RaffleStrategyController implements IRaffleStrategyService {
                         .sort(strategyAward.getSort())
                         .awardRuleLockCount(awardRuleLockCnt)
                         .isAwardUnlock(null == awardRuleLockCnt || 0 == awardRuleLockCnt || partakeCnt >= awardRuleLockCnt)
-                        .waitUnlockCount(null == awardRuleLockCnt || 0 == awardRuleLockCnt || partakeCnt >= awardRuleLockCnt ? 0 : awardRuleLockCnt - partakeCnt)
+                        .waitUnLockCount(null == awardRuleLockCnt || 0 == awardRuleLockCnt || partakeCnt >= awardRuleLockCnt ? 0 : awardRuleLockCnt - partakeCnt)
                         .build());
             }
             Response<List<RaffleAwardListResponseDTO>> response = Response.<List<RaffleAwardListResponseDTO>>builder()

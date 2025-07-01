@@ -20,4 +20,5 @@ public interface ITaskDao {
     void changeState2Retry(Task task);
 
     List<Task> queryNoSentMessageTask();
+
 }

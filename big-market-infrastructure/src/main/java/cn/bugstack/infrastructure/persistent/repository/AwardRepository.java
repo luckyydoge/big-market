@@ -5,7 +5,7 @@ import cn.bugstack.domain.activity.model.valobj.OrderStateVO;
 import cn.bugstack.domain.award.model.aggregate.UserAwardRecordAggregate;
 import cn.bugstack.domain.award.model.entity.TaskEntity;
 import cn.bugstack.domain.award.model.entity.UserAwardRecordEntity;
-import cn.bugstack.domain.award.model.event.SendAwardMessageEvent;
+import cn.bugstack.domain.award.event.SendAwardMessageEvent;
 import cn.bugstack.domain.award.repository.IAwardRepository;
 import cn.bugstack.infrastructure.event.EventPublisher;
 import cn.bugstack.infrastructure.persistent.dao.ITaskDao;

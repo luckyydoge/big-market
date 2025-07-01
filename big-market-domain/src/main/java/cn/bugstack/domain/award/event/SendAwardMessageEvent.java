@@ -1,4 +1,4 @@
-package cn.bugstack.domain.award.model.event;
+package cn.bugstack.domain.award.event;
 
 import cn.bugstack.types.event.BaseEvent;
 import lombok.AllArgsConstructor;

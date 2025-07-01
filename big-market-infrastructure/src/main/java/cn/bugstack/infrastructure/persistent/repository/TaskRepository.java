@@ -1,6 +1,6 @@
 package cn.bugstack.infrastructure.persistent.repository;
 
-import cn.bugstack.domain.award.model.event.SendAwardMessageEvent;
+import cn.bugstack.domain.award.event.SendAwardMessageEvent;
 import cn.bugstack.domain.task.model.TaskEntity;
 import cn.bugstack.domain.task.repository.ITaskRepository;
 import cn.bugstack.infrastructure.event.EventPublisher;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Repository
