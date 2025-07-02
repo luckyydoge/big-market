@@ -121,4 +121,24 @@ public class BehaviorRebateRepository implements IBehaviorRebateRepository {
             }
         }
     }
+
+    @Override
+    public List<BehaviorRebateOrderEntity> queryOrderByOutBusinessNo(String userId, String outBusinessNo) {
+        UserBehaviorRebateOrder req = new UserBehaviorRebateOrder();
+        req.setUserId(userId);
+        req.setOutBusinessNo(outBusinessNo);
+        List<UserBehaviorRebateOrder> userBehaviorRebateOrders = userBehaviorRebateOrderDao.queryOrderByFactor(req);
+        return userBehaviorRebateOrders.stream()
+                .map(item -> BehaviorRebateOrderEntity.builder()
+                        .userId(item.getUserId())
+                        .orderId(item.getOrderId())
+                        .behaviorType(item.getBehaviorType())
+                        .rebateDesc(item.getRebateDesc())
+                        .rebateType(item.getRebateType())
+                        .rebateConfig(item.getRebateConfig())
+                        .bizId(item.getBizId())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
 }

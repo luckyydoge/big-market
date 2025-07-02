@@ -4,6 +4,7 @@ import cn.bugstack.domain.strategy.model.entity.StrategyAwardEntity;
 import cn.bugstack.domain.strategy.model.entity.StrategyEntity;
 import cn.bugstack.domain.strategy.model.entity.StrategyRuleEntity;
 import cn.bugstack.domain.strategy.model.valobj.RuleTreeVO;
+import cn.bugstack.domain.strategy.model.valobj.RuleWeightVO;
 import cn.bugstack.domain.strategy.model.valobj.StrategyAwardRuleModelVO;
 import cn.bugstack.domain.strategy.model.valobj.StrategyAwardStockKeyVO;
 
@@ -50,4 +51,9 @@ public interface IStrategyRepository {
     Integer queryAwardRuleLockCnt(String treeId);
 
     Long queryStrategyIdByActivityId(Long activityId);
+
+    List<RuleWeightVO> queryAwardRuleWeightByActivityId(Long activityId);
+    List<RuleWeightVO> queryAwardRuleWeightByStrategyId(Long strategyId);
+
+    Integer queryPartakeCnt(Long strategyId, String userId);
 }

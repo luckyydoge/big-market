@@ -21,7 +21,6 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
     @Resource
     IStrategyDispatch dispatch;
 
-    public Long userScore = 0L;
 
     @Override
     public String ruleModel() {
@@ -38,7 +37,9 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
                 List<Long> analyticalSortedKeys = new ArrayList<>(analyticalValueMap.keySet());
                 Collections.sort(analyticalSortedKeys);
 
+                Integer userScore = repository.queryPartakeCnt(strategyId, userId);
                 Long weightValue = analyticalSortedKeys.stream()
+                        .sorted(Comparator.reverseOrder())
                         .filter(key -> userScore >= key)
                         .max(Long::compareTo)
                         .orElse(null);
