@@ -164,7 +164,7 @@ public class ActivityRepository implements IActivityRepository {
             RaffleActivityAccountMonth raffleActivityAccountMonth = new RaffleActivityAccountMonth();
             raffleActivityAccountMonth.setUserId(createOrderAggregate.getUserId());
             raffleActivityAccountMonth.setActivityId(createOrderAggregate.getActivityId());
-            raffleActivityAccountMonth.setMonth(raffleActivityAccountMonth.currentMonth());
+            raffleActivityAccountMonth.setMonth(RaffleActivityAccountMonth.currentMonth());
             raffleActivityAccountMonth.setMonthCount(createOrderAggregate.getMonthCount());
             raffleActivityAccountMonth.setMonthCountSurplus(createOrderAggregate.getMonthCount());
 
@@ -172,7 +172,7 @@ public class ActivityRepository implements IActivityRepository {
             RaffleActivityAccountDay raffleActivityAccountDay = new RaffleActivityAccountDay();
             raffleActivityAccountDay.setUserId(createOrderAggregate.getUserId());
             raffleActivityAccountDay.setActivityId(createOrderAggregate.getActivityId());
-            raffleActivityAccountDay.setDay(raffleActivityAccountDay.currentDay());
+            raffleActivityAccountDay.setDay(RaffleActivityAccountDay.currentDay());
             raffleActivityAccountDay.setDayCount(createOrderAggregate.getDayCount());
             raffleActivityAccountDay.setDayCountSurplus(createOrderAggregate.getDayCount());
 
@@ -292,7 +292,32 @@ public class ActivityRepository implements IActivityRepository {
         raffleActivityAccountReq.setActivityId(activityId);
         RaffleActivityAccount raffleActivityAccountRes = raffleActivityAccountDao.queryActivityAccountByUserId(raffleActivityAccountReq);
         if (null == raffleActivityAccountRes) {
-            return null;
+            raffleActivityAccountRes = RaffleActivityAccount.builder()
+                    .userId(userId)
+                    .activityId(activityId)
+                    .totalCount(10)
+                    .totalCountSurplus(10)
+                    .dayCount(10)
+                    .dayCountSurplus(10)
+                    .monthCount(10)
+                    .monthCountSurplus(10)
+                    .build();
+            dbRouter.doRouter(userId);
+            transactionTemplate.execute(status -> {
+                RaffleActivityAccount account = RaffleActivityAccount.builder()
+                        .userId(userId)
+                        .activityId(activityId)
+                        .totalCount(10)
+                        .totalCountSurplus(10)
+                        .dayCount(10)
+                        .dayCountSurplus(10)
+                        .monthCount(10)
+                        .monthCountSurplus(10)
+                        .build();
+                raffleActivityAccountDao.insert(account);
+                return 1;
+
+            });
         }
         return ActivityAccountEntity.builder()
                 .userId(raffleActivityAccountRes.getUserId())

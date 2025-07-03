@@ -30,7 +30,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
     @Override
     public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
         log.info("抽奖责任链-权重开始 userId: {} strategyId: {} ruleModel: {}", userId, strategyId, ruleModel());
-        String ruleValue = repository.queryStrategyRuleValue(strategyId, userId);
+        String ruleValue = repository.queryStrategyRuleValue(strategyId, DefaultChainFactory.LogicModel.RULE_WEIGHT.getCode());
         if (null != ruleValue && !ruleValue.isEmpty()) {
             Map<Long, String> analyticalValueMap = getAnalyticalValue(ruleValue);
             if (!analyticalValueMap.isEmpty()) {
@@ -67,7 +67,7 @@ public class RuleWeightLogicChain extends AbstractLogicChain {
             if (parts.length != 2) {
                 throw new IllegalArgumentException("rule_weight rule_rule invalid input format" + ruleValueKey);
             }
-            ruleValueMap.put(Long.parseLong(parts[0]), ruleValueKey);
+            ruleValueMap.put(Long.parseLong(parts[0]), ruleValueGroup);
         }
         return ruleValueMap;
 

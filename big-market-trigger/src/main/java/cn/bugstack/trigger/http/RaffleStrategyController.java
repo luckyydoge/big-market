@@ -124,7 +124,7 @@ public class RaffleStrategyController implements IRaffleStrategyService {
     }
 
 
-    @RequestMapping(value = "random_raffle", method = RequestMethod.POST)
+    @RequestMapping(value = "/random_raffle", method = RequestMethod.POST)
     @Override
     public Response<RaffleStrategyResponseDTO> randomRaffle(@RequestBody RaffleStrategyRequestDTO requestDTO) {
         try {
@@ -160,9 +160,9 @@ public class RaffleStrategyController implements IRaffleStrategyService {
         }
     }
 
-    @RequestMapping(value = "query_raffle_strategy_rule_weight", method = RequestMethod.POST)
+    @RequestMapping(value = "/query_raffle_strategy_rule_weight", method = RequestMethod.POST)
     @Override
-    public Response<List<RaffleStrategyRuleWeightResponseDTO>> queryRaffleStrategyRuleWeight(RaffleStrategyRuleWeightRequestDTO request) {
+    public Response<List<RaffleStrategyRuleWeightResponseDTO>> queryRaffleStrategyRuleWeight(@RequestBody RaffleStrategyRuleWeightRequestDTO request) {
         try {
             log.info("查询抽奖策略权重规则配置开始 userId:{} activityId：{}", request.getUserId(), request.getActivityId());
             // 1. 参数校验

@@ -47,10 +47,10 @@ CREATE TABLE `raffle_activity_account` (
 LOCK TABLES `raffle_activity_account` WRITE;
 /*!40000 ALTER TABLE `raffle_activity_account` DISABLE KEYS */;
 
-INSERT INTO `raffle_activity_account` (`id`, `user_id`, `activity_id`, `total_count`, `total_count_surplus`, `day_count`, `day_count_surplus`, `month_count`, `month_count_surplus`, `create_time`, `update_time`)
-VALUES
-    (2,'xiaofuge',100301,4,3,4,3,4,3,'2024-03-23 12:40:56','2024-03-23 13:16:40'),
-    (3,'xiaofuge1',100301,10,10,10,10,10,10,'2024-05-03 16:01:44','2024-05-03 16:01:44');
+# INSERT INTO `raffle_activity_account` (`id`, `user_id`, `activity_id`, `total_count`, `total_count_surplus`, `day_count`, `day_count_surplus`, `month_count`, `month_count_surplus`, `create_time`, `update_time`)
+# VALUES
+#     (2,'xiaofuge',100301,4,3,4,3,4,3,'2024-03-23 12:40:56','2024-03-23 13:16:40'),
+#     (3,'xiaofuge1',100301,10,10,10,10,10,10,'2024-05-03 16:01:44','2024-05-03 16:01:44');
 
 /*!40000 ALTER TABLE `raffle_activity_account` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -126,9 +126,9 @@ CREATE TABLE `raffle_activity_order_000` (
 LOCK TABLES `raffle_activity_order_000` WRITE;
 /*!40000 ALTER TABLE `raffle_activity_order_000` DISABLE KEYS */;
 
-INSERT INTO `raffle_activity_order_000` (`id`, `user_id`, `sku`, `activity_id`, `activity_name`, `strategy_id`, `order_id`, `order_time`, `total_count`, `day_count`, `month_count`, `state`, `out_business_no`, `create_time`, `update_time`)
-VALUES
-    (1,'xiaofuge1',9011,100301,'测试活动',100006,'831917125310','2024-05-03 08:01:44',10,10,10,'completed','xiaofuge1_sku_20240503','2024-05-03 16:01:44','2024-05-03 16:01:44');
+# INSERT INTO `raffle_activity_order_000` (`id`, `user_id`, `sku`, `activity_id`, `activity_name`, `strategy_id`, `order_id`, `order_time`, `total_count`, `day_count`, `month_count`, `state`, `out_business_no`, `create_time`, `update_time`)
+# VALUES
+#     (1,'xiaofuge1',9011,100301,'测试活动',100006,'831917125310','2024-05-03 08:01:44',10,10,10,'completed','xiaofuge1_sku_20240503','2024-05-03 16:01:44','2024-05-03 16:01:44');
 
 /*!40000 ALTER TABLE `raffle_activity_order_000` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -164,9 +164,9 @@ CREATE TABLE `raffle_activity_order_001` (
 LOCK TABLES `raffle_activity_order_001` WRITE;
 /*!40000 ALTER TABLE `raffle_activity_order_001` DISABLE KEYS */;
 
-INSERT INTO `raffle_activity_order_001` (`id`, `user_id`, `sku`, `activity_id`, `activity_name`, `strategy_id`, `order_id`, `order_time`, `total_count`, `day_count`, `month_count`, `state`, `out_business_no`, `create_time`, `update_time`)
-VALUES
-    (3,'xiaofuge',9011,100301,'测试活动',100006,'383240888158','2024-03-23 04:38:23',1,1,1,'completed','700091009111','2024-03-23 12:38:23','2024-03-23 12:38:23');
+# INSERT INTO `raffle_activity_order_001` (`id`, `user_id`, `sku`, `activity_id`, `activity_name`, `strategy_id`, `order_id`, `order_time`, `total_count`, `day_count`, `month_count`, `state`, `out_business_no`, `create_time`, `update_time`)
+# VALUES
+#     (3,'xiaofuge',9011,100301,'测试活动',100006,'383240888158','2024-03-23 04:38:23',1,1,1,'completed','700091009111','2024-03-23 12:38:23','2024-03-23 12:38:23');
 
 /*!40000 ALTER TABLE `raffle_activity_order_001` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -253,10 +253,10 @@ CREATE TABLE `task` (
 LOCK TABLES `task` WRITE;
 /*!40000 ALTER TABLE `task` DISABLE KEYS */;
 
-INSERT INTO `task` (`id`, `user_id`, `topic`, `message_id`, `message`, `state`, `create_time`, `update_time`)
-VALUES
-    (1,'xiaofuge1','send_rebate','54825531405','{\"data\":{\"bizId\":\"xiaofuge1_sku_20240503\",\"rebateConfig\":\"9011\",\"rebateType\":\"sku\",\"userId\":\"xiaofuge1\"},\"id\":\"54825531405\",\"timestamp\":1714723302543}','completed','2024-05-03 16:01:43','2024-05-03 16:01:43'),
-    (2,'xiaofuge1','send_rebate','43189560552','{\"data\":{\"bizId\":\"xiaofuge1_integral_20240503\",\"rebateConfig\":\"10\",\"rebateType\":\"integral\",\"userId\":\"xiaofuge1\"},\"id\":\"43189560552\",\"timestamp\":1714723302551}','completed','2024-05-03 16:01:43','2024-05-03 16:01:43');
+# INSERT INTO `task` (`id`, `user_id`, `topic`, `message_id`, `message`, `state`, `create_time`, `update_time`)
+# VALUES
+#     (1,'xiaofuge1','send_rebate','54825531405','{\"data\":{\"bizId\":\"xiaofuge1_sku_20240503\",\"rebateConfig\":\"9011\",\"rebateType\":\"sku\",\"userId\":\"xiaofuge1\"},\"id\":\"54825531405\",\"timestamp\":1714723302543}','completed','2024-05-03 16:01:43','2024-05-03 16:01:43'),
+#     (2,'xiaofuge1','send_rebate','43189560552','{\"data\":{\"bizId\":\"xiaofuge1_integral_20240503\",\"rebateConfig\":\"10\",\"rebateType\":\"integral\",\"userId\":\"xiaofuge1\"},\"id\":\"43189560552\",\"timestamp\":1714723302551}','completed','2024-05-03 16:01:43','2024-05-03 16:01:43');
 
 /*!40000 ALTER TABLE `task` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -392,10 +392,10 @@ CREATE TABLE `user_behavior_rebate_order_000` (
 LOCK TABLES `user_behavior_rebate_order_000` WRITE;
 /*!40000 ALTER TABLE `user_behavior_rebate_order_000` DISABLE KEYS */;
 
-INSERT INTO `user_behavior_rebate_order_000` (`id`, `user_id`, `order_id`, `behavior_type`, `rebate_desc`, `rebate_type`, `rebate_config`, `out_business_no`, `biz_id`, `create_time`, `update_time`)
-VALUES
-    (5,'xiaofuge1','883971522401','sign','签到返利-sku额度','sku','9011','20240503','xiaofuge1_sku_20240503','2024-05-03 16:01:42','2024-05-03 16:01:42'),
-    (6,'xiaofuge1','995944930386','sign','签到返利-积分','integral','10','20240503','xiaofuge1_integral_20240503','2024-05-03 16:01:43','2024-05-03 16:01:43');
+# INSERT INTO `user_behavior_rebate_order_000` (`id`, `user_id`, `order_id`, `behavior_type`, `rebate_desc`, `rebate_type`, `rebate_config`, `out_business_no`, `biz_id`, `create_time`, `update_time`)
+# VALUES
+#     (5,'xiaofuge1','883971522401','sign','签到返利-sku额度','sku','9011','20240503','xiaofuge1_sku_20240503','2024-05-03 16:01:42','2024-05-03 16:01:42'),
+#     (6,'xiaofuge1','995944930386','sign','签到返利-积分','integral','10','20240503','xiaofuge1_integral_20240503','2024-05-03 16:01:43','2024-05-03 16:01:43');
 
 /*!40000 ALTER TABLE `user_behavior_rebate_order_000` ENABLE KEYS */;
 UNLOCK TABLES;
