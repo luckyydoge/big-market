@@ -140,12 +140,14 @@ public class RaffleActivityController implements IRaffleActivityService {
                     .build();
         } catch (AppException e) {
             log.error("raffle fail, userId{}, activityId {}", raffleActivityDrawRequestDTO.getUserId(), raffleActivityDrawRequestDTO.getActivityId());
+            e.printStackTrace();
             return Response.<RaffleActivityDrawResponseDTO>builder()
                     .code(e.getCode())
                     .info(e.getInfo())
                     .build();
         } catch (Exception e) {
             log.error("raffle fail, unknown error, userId{}, activityId {}", raffleActivityDrawRequestDTO.getUserId(), raffleActivityDrawRequestDTO.getActivityId());
+            e.printStackTrace();
             return Response.<RaffleActivityDrawResponseDTO>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
